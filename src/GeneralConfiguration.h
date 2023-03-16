@@ -122,26 +122,15 @@ public:
   
   void loop() {}
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position)
+  void displayScreenPage(IDisplay *display, int position)
   {
-    display->clearDisplay();
-    display->setTextSize(1);
-    display->setCursor(0, 0);
+    display->blackOnWhite();
+    displayPrintline(display, getName());
 
-    display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    display->println(this->getName());
-    display->setTextColor(WHITE); 
-
-    display->print("GPS logging: ");
-    display->println(config.logGps);
-
-    display->print("Touch logging: ");
-    display->println(config.logTouchThresholds);
-
-    display->print("LED loop/s: ");
-    display->println(config.loopFrequencyForLed);
-
-    display->display();
+    display->whiteOnBlack();
+    displayPrintline(display, "GPS logging: ", config.logGps);
+    displayPrintline(display, "Touch logging: ", config.logTouchThresholds);
+    displayPrintline(display, "LED loop/s: ", config.loopFrequencyForLed);
   }
 };
 #endif

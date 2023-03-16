@@ -87,48 +87,38 @@ public:
     mapOfStatistics[module]->lastLoopTimes.push_back(loopTime);
   }
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position)
+  void displayScreenPage(IDisplay *display, int position)
   {
-    display->clearDisplay();
-    display->setTextSize(1);
-
     std::vector<TDrawFunction> lines;
     StatisticsModule *that = this;
 
-    display->setCursor(0, 0);
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-      display->println(that->getName());
-      display->setTextColor(WHITE); 
+    lines.push_back([that](IDisplay *display){
+      display->blackOnWhite();
+      displayPrintline(display, that->getName());
+      display->whiteOnBlack();
     });
 
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->print("Up: ");
+    lines.push_back([that](IDisplay *display){
       uint32_t uptime = (millis() - that->uptimeMs);
       if(uptime < 30000){
-        display->print(uptime);
-        display->println(" ms");
+        displayPrintline(display, "Uptime: ", uptime, " ms");
       } else if(uptime >= 30000){
-        display->print((float) uptime / (float)1000U);
-        display->println(" s");
+        displayPrintline(display, "Uptime: ", (float) uptime / (float)1000U, " s");
       }
     });
 
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->print("Loop/s: ");
-      display->println(that->loopPerSeconds);
+    lines.push_back([that](IDisplay *display){
+      displayPrintline(display, "Loop/s: ", that->loopPerSeconds);
     });
 
    for(statMap_t::iterator it=mapOfStatistics.begin(); it!=mapOfStatistics.end(); ++it){
       IBaseModule *module = it->first;
       statistic_t* stat = it->second;
-      lines.push_back([that, module, stat](Adafruit_SSD1306 *display) {
-        display->println(module->getName());
+      lines.push_back([that, module, stat](IDisplay *display) {
+        displayPrintline(display, module->getName());
       });
-      lines.push_back([that, module, stat](Adafruit_SSD1306 *display) {
-        display->print(" ->  "); 
-        display->print(stat->meanLoopTimes);
-        display->println(" ms"); 
+      lines.push_back([that, module, stat](IDisplay *display) {
+        displayPrintline(display, " -> ", stat->meanLoopTimes, " ms");
       });
       //serialPrint("MEAN_", module->getName(), ":", stat->meanLoopTimes, ",\t");
     }
@@ -139,7 +129,6 @@ public:
     {
       lines.at(i + startingPosition)(display);
     }
-    display->display();
   }
 };
 #endif

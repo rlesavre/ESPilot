@@ -80,49 +80,34 @@ void GpsModule::getgps(TinyGPS &gps)
 
 typedef std::function<void()> TLineFunction;
 
-void GpsModule::displayScreenPage(Adafruit_SSD1306 *display, int position){
-  display->clearDisplay();
-  display->setTextSize(1);
-  display->setTextColor(SSD1306_BLACK, SSD1306_WHITE); // Draw 'inverse' text
-  display->setCursor(0, 0);
-
-  display->println("GPS MODULE");
-  display->setTextColor(WHITE);
+void GpsModule::displayScreenPage(IDisplay *display, int position){
+  display->blackOnWhite();
+  displayPrintline(display, this->getName());
+  display->whiteOnBlack();
 
   std::vector<TLineFunction> lines;
   GpsModule *that = this;
 
   lines.push_back([&](){
-    display->print("Last fix:"); 
-    display->print(that->delayFix()); 
-    display->println(" ms"); 
+    displayPrintline(display, "Last fix:", that->delayFix(), " ms");
   });
   lines.push_back([&](){
-    display->print("Lat: "); 
-    display->println(that->latitude, 8); 
+    displayPrintline(display, "Lat: ", that->latitude);
   });
   lines.push_back([&](){
-    display->print("Long: "); 
-    display->println(that->longitude, 8);
+    displayPrintline(display, "Long: ", that->longitude);
   });
   lines.push_back([&](){
-    display->print("Altitude: "); 
-    display->print(that->altitude); 
-    display->println(" m"); 
+    displayPrintline(display, "Altitude: ", that->speed_mps, " m");
   });
   lines.push_back([&](){
-    display->print("Speed: "); 
-    display->print(that->speed_mps); 
-    display->println(" m/s"); 
+    displayPrintline(display, "Speed: ", that->speed_mps, " m/s");
   });
   lines.push_back([&](){
-    display->print("Course: "); 
-    display->println(that->course); 
+    displayPrintline(display, "Course: ", that->course);
   }); 
 
   for(int i=0; i<3; i++){
     lines.at(i + (position * 3) % lines.size())();
   }
-  display->display();
 }
-

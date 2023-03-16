@@ -77,62 +77,49 @@ void MotionModule::loop() {
 
 
 
-void MotionModule::addVectorDisplayLines(std::vector<TDrawFunction> *lines, Adafruit_SSD1306 *display, const char *name, vec_t &vector)
+void MotionModule::addVectorDisplayLines(std::vector<TDrawFunction> *lines, IDisplay *display, const char *name, vec_t &vector)
 {
   MotionModule *that = this;
-  lines->push_back([that, name, vector](Adafruit_SSD1306 *display){
-    display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    display->println(name); 
-    display->setTextColor(SSD1306_WHITE, SSD1306_BLACK);
+  lines->push_back([that, name, vector](IDisplay *display){
+    display->blackOnWhite();
+    displayPrintline(display, name);
+    display->whiteOnBlack();
   });
 
-  lines->push_back([that, name, vector](Adafruit_SSD1306 *display){
-    display->print(vector.x, 2);
-    display->print(" ");
-    display->print(vector.y, 2);
-    display->print(" "); 
-    display->println(vector.z, 2);  
+  lines->push_back([that, name, vector](IDisplay *display){
+    displayPrintline(display, vector.x, " ", vector.y, " ", vector.z);  
   });
 }
 
-void MotionModule::displayScreenPage(Adafruit_SSD1306 *display, int position) {
-  display->clearDisplay();
-  display->setTextSize(1);
+void MotionModule::displayScreenPage(IDisplay *display, int position) {
 
   std::vector<TDrawFunction> lines;
   MotionModule *that = this;
-  
-  display->setCursor(0, 0);
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->setFont(NULL);
-    display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    display->println("MOTION MODULE");
-    display->setTextColor(WHITE);
+
+  lines.push_back([that](IDisplay *display){
+    display->blackOnWhite();
+    displayPrintline(display, that->getName());
+    display->whiteOnBlack();
   });
 
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->print("Board temp: "); 
-    display->println(that->boardTemp); 
+  lines.push_back([that](IDisplay *display){
+    displayPrintline(display, "Board temp: ", that->boardTemp); 
   });
 
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->print("Cal.Sys = "); 
-    display->println(that->system); 
+  lines.push_back([that](IDisplay *display){
+    displayPrintline(display, "Cal.Sys = ", that->system); 
   });
 
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->print("Cal.Gyro = "); 
-    display->println(that->gyro); 
+  lines.push_back([that](IDisplay *display){
+    displayPrintline(display, "Cal.Gyro = ", that->gyro); 
   });
 
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->print("Cal.Acc = "); 
-    display->println(that->accel); 
+  lines.push_back([that](IDisplay *display){
+    displayPrintline(display, "Cal.Acc = ", that->accel); 
   });
 
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->print("Cal.Mag = "); 
-    display->println(that->mag); 
+  lines.push_back([that](IDisplay *display){
+    displayPrintline(display, "Cal.Mag = ", that->mag); 
   });
   addVectorDisplayLines(&lines, display, "orientation", orientation);
   addVectorDisplayLines(&lines, display, "acceleration", acceleration);
@@ -146,6 +133,4 @@ void MotionModule::displayScreenPage(Adafruit_SSD1306 *display, int position) {
   for(int i=0; i<4 && i<=lines.size() - startingPosition; i++){
     lines.at(i + startingPosition)(display);
   }
-
-  display->display();
 }

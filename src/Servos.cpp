@@ -44,28 +44,21 @@ void ServosModule::loop() {
   }
 }
 
-void ServosModule::displayScreenPage(Adafruit_SSD1306 *display, int position) {
-  display->clearDisplay();
-  display->setTextSize(1);
-
+void ServosModule::displayScreenPage(IDisplay *display, int position) {
   std::vector<TDrawFunction> lines;
   ServosModule *that = this;
-  
-  display->setCursor(0, 0);
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->setFont(NULL);
-    display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    display->println(that->getName());
-    display->setTextColor(WHITE);
+
+  lines.push_back([that](IDisplay *display){
+    display->blackOnWhite();
+    displayPrintline(display, that->getName());
+    display->whiteOnBlack();
   });
 
-  lines.push_back([that](Adafruit_SSD1306 *display){
-    display->print("SERVO 1: "); 
-    display->println(that->servo1position); 
+  lines.push_back([that](IDisplay *display){
+    displayPrintline(display, "SERVO 1: ", that->servo1position);
   });
 
   for(int i=0; i<lines.size(); i++){
     lines.at(i)(display);
   }
-  display->display();
 }

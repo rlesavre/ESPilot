@@ -22,7 +22,7 @@ public:
 	void loop();
   int delayFix();
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position);
+  void displayScreenPage(IDisplay *display, int position);
 
 private:
   bool outputedDate = false;

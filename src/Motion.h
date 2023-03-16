@@ -26,10 +26,10 @@ public:
   const char* getName() {return "Motion";}
   IScreenPage* getDisplayPage() {return this;}
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position);
+  void displayScreenPage(IDisplay *display, int position);
 private:
   void readEvent(sensors_event_t* event);
-  void addVectorDisplayLines(std::vector<TDrawFunction> *lines, Adafruit_SSD1306 *display, const char *name, vec_t &vector);
+  void addVectorDisplayLines(std::vector<TDrawFunction> *lines, IDisplay *display, const char *name, vec_t &vector);
 
   int lastMotionRead = -1;
   Adafruit_BNO055 *bno;

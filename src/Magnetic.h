@@ -44,34 +44,27 @@ public:
     }
   }
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position)
+  void displayScreenPage(IDisplay *display, int position)
   {
-    display->clearDisplay();
-    display->setTextSize(1);
-
     std::vector<TDrawFunction> lines;
     MagneticModule *that = this;
 
-    display->setCursor(0, 0);
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-      display->println(that->getName());
-      display->setTextColor(WHITE); 
+    lines.push_back([that](IDisplay *display){
+      display->blackOnWhite();
+      displayPrintline(display, that->getName());
+      display->whiteOnBlack();
     });
 
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->print("Angle: ");
-      display->println(that->rawAngle * AS5600_RAW_TO_DEGREES);
+    lines.push_back([that](IDisplay *display){
+      displayPrintline(display, "Angle: ", that->rawAngle * AS5600_RAW_TO_DEGREES);
     });
 
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->print("Speed: ");
-      display->println(that->angularSpeed);
+    lines.push_back([that](IDisplay *display){
+      displayPrintline(display, "Speed: ", that->angularSpeed);
     });
 
-    lines.push_back([that](Adafruit_SSD1306 *display){
-      display->print("Position: ");
-      display->println(that->position);
+    lines.push_back([that](IDisplay *display){
+      displayPrintline(display, "Position: ", that->position);
     });
 
     int startingPosition = position % (lines.size() - 4 + 1);
@@ -81,8 +74,6 @@ public:
     {
       lines.at(i + startingPosition)(display);
     }
-
-    display->display();
   }
 };
 #endif

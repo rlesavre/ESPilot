@@ -10,6 +10,7 @@
 #include "Storage.h"
 #include "GeneralConfiguration.h"
 #include "Servos.h"
+#include "Logger.h"
 
 #define SERIAL_SETUP_GRACEDELAY 2000
 
@@ -18,11 +19,18 @@ TouchpadModule *touchpadModule;
 StatisticsModule *statisticsModule;
 ScreenModule *screenModule;
 MagneticModule *magneticModule;
+
 void setup()
 {
   Serial.begin(115200);
   delay(SERIAL_SETUP_GRACEDELAY);
   Serial.println(">> Building modules");
+
+  auto storage = new StorageModule();
+  modules.push_back(storage);
+
+  modules.push_back(LoggerModule::GetInstance());
+
 
   statisticsModule = new StatisticsModule();
   modules.push_back(statisticsModule);
@@ -37,7 +45,7 @@ void setup()
   
   magneticModule = new MagneticModule();
   modules.push_back(magneticModule);
-  modules.push_back(new StorageModule());
+  
   modules.push_back(new GeneralConfigurationModule());
   modules.push_back(new ServosModule());
 

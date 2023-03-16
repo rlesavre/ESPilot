@@ -25,5 +25,7 @@ template <typename T>  class Subject {
   }
  private:
   std::list<Observer<T> *> observers;
+
+  //array<Observer<T>*> observers;
 };
 #endif

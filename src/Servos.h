@@ -32,7 +32,7 @@ class ServosModule: public IBaseModule, public IScreenPage {
 public:
   const char* getName() {return "Servos";}
   IScreenPage* getDisplayPage() {return this;}
-  void displayScreenPage(Adafruit_SSD1306 *display, int position);
+  void displayScreenPage(IDisplay *display, int position);
 
 	ServosModule();
 	void setup();

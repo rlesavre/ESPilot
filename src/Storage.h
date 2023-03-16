@@ -56,24 +56,14 @@ public:
   
   void loop() {}
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position)
+  void displayScreenPage(IDisplay *display, int position)
   {
-    display->clearDisplay();
-    display->setTextSize(1);
-    display->setCursor(0, 0);
+    display->blackOnWhite();
+    displayPrintline(display, this->getName());
 
-    display->setTextColor(SSD1306_BLACK, SSD1306_WHITE);
-    display->println(this->getName());
-    display->setTextColor(WHITE); 
-
-    display->print("Card type: ");
-    display->println(getCard());
-
-    display->print("Card size: ");
-    display->print(cardSize);
-    display->println(" MB");
-
-    display->display();
+    display->whiteOnBlack();
+    displayPrintline(display, "Card type: ", getCard());
+    displayPrintline(display, "Card size: ", (unsigned long)cardSize, " MB");
   }
 };
 #endif

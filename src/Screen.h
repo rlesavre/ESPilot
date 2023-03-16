@@ -18,7 +18,7 @@
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define DRAW_PERIOD 100
 
-class ScreenModule : public Observer<int>, public IScreenPage, public IBaseModule {
+class ScreenModule : public Observer<int>, public IScreenPage, public IBaseModule, public IDisplay {
 public:
   const char* getName() {return "Screen";}
   IScreenPage* getDisplayPage() {return this;}
@@ -35,7 +35,21 @@ public:
 
   void notify(int arg);
 
-  void displayScreenPage(Adafruit_SSD1306 *display, int position);
+  void displayScreenPage(IDisplay *display, int position);
+
+  void whiteOnBlack();
+  void blackOnWhite();
+
+  void print(const char* line);
+  void print(char c);
+  void print(unsigned char uc);
+  void print(int i);
+  void print(unsigned int ui);
+  void print(long l);
+  void print(unsigned long ul);
+  void print(double d);   
+  void print(bool b);
+  void eol();
 
 private:
   std::vector<IScreenPage*> pages;
