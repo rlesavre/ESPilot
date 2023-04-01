@@ -1,4 +1,5 @@
 #include "Motion.h"
+#include "Logger.h"
 
 uint16_t BNO055_SAMPLERATE_DELAY_MS = 100;
 
@@ -8,10 +9,9 @@ MotionModule::MotionModule(TwoWire *twi) {
 
 void MotionModule::setup() {
   if (!bno->begin()) {
-    /* There was a problem detecting the BNO055 ... check your connections */
-    Serial.println("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-    while (1)
-      ;
+    logf("Fatal error: no BNO055 detected ... Check your wiring or I2C ADDR!");
+    delay(500);
+    esp_restart();
   }
 }
 

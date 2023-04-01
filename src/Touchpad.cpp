@@ -1,4 +1,5 @@
 #include "Touchpad.h"
+#include "Logger.h"
 
 /**
  * Can't find a way to give a class member as interrupt function pointer :(
@@ -35,8 +36,8 @@ void TouchpadModule::setup(){
 void TouchpadModule::loop(){
   for (int i = 0; i < TOUCH_BUTTON_COUNT; i++) {
     if(enableThresholdDump){
-       serialPrintLine("TOUCH_PIN_", TOUCH_BUTTON_PINS[i],":",touchRead(TOUCH_BUTTON_PINS[i]), 
-         ",THRESHOLD_PIN_", TOUCH_BUTTON_PINS[i], ":", TOUCH_BUTTON_THRESHOLDS[i]);
+      //serialPrintLine("TOUCH_PIN_", TOUCH_BUTTON_PINS[i],":",touchRead(TOUCH_BUTTON_PINS[i]), ",THRESHOLD_PIN_", TOUCH_BUTTON_PINS[i], ":", TOUCH_BUTTON_THRESHOLDS[i]);
+      logf("TOUCH_PIN_%i:%i,THRESHOLD_PIN_%i:%i", TOUCH_BUTTON_PINS[i], touchRead(TOUCH_BUTTON_PINS[i]), TOUCH_BUTTON_PINS[i], TOUCH_BUTTON_THRESHOLDS[i]);
     }
 
     if(touchesDetected[i]){
@@ -48,7 +49,8 @@ void TouchpadModule::loop(){
         buttonReleased.notifyObservers(i);
         pressed = false;
       }
-      serialPrintLine("Touch event on ", TOUCH_BUTTON_PINS[i], pressed ? " [pressed]":" [released]");
+      //serialPrintLine("Touch event on ", TOUCH_BUTTON_PINS[i], pressed ? " [pressed]":" [released]");
+      logf("Touch event on %i = %s", TOUCH_BUTTON_PINS[i], pressed ? "pressed":" released");
     }
   }
 }
@@ -60,5 +62,3 @@ void TouchpadModule::onTouchInterrupt(int button){
 void TouchpadModule::toggleThresholdDebugging(){
   enableThresholdDump = !enableThresholdDump;
 }
-
-

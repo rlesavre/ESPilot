@@ -3,7 +3,10 @@
 #include <TinyGPS.h>
 #include "Screen.h"
 
-GpsModule::GpsModule(int rxPin, int txPin) {
+#include "Logger.h"
+
+GpsModule::GpsModule(TOpenFile getFile, int rxPin, int txPin) {
+  getGpsLogFile = getFile;
   lastGpsFix = -1;
   longitude = -1;
   latitude = -1;
@@ -39,39 +42,31 @@ int GpsModule::delayFix(){
 
 void GpsModule::getgps(TinyGPS &gps)
 {
-  gps.f_get_position(&latitude, &longitude);
+  float new_longitude;
+	float new_latitude;
+  gps.f_get_position(&new_latitude, &new_longitude);
+
+
   altitude = gps.f_altitude();
   course = gps.f_course();
   speed_mps = gps.f_speed_mps();
 
   gps.crack_datetime(&year, &month, &day, &hour, &minute, &second, &hundredths);
 
-  if(!outputedDate){
+  if(!outputedDate || logGpsData){
     outputedDate = true;
-    Serial.print("GPS Date: "); Serial.print(month, DEC); Serial.print("/"); 
-    Serial.print(day, DEC); Serial.print("/"); Serial.print(year);
-    Serial.print("  Time: "); Serial.print(hour, DEC); Serial.print(":"); 
-    Serial.print(minute, DEC); Serial.print(":"); Serial.print(second, DEC); 
-    Serial.print("."); Serial.println(hundredths, DEC);
+    logf("GPS Data - %02u/%02u/%4u %02u:%02u:%02u; %11.8f; %11.8f\r\n", (int)day, month, year, hour, minute, second, latitude, longitude);
   }
 
-  // Serial.print("Lat/Long: "); 
-  // Serial.print(latitude,5); 
-  // Serial.print(", "); 
-  // Serial.println(longitude,5);
-  
-  // Serial.print("Date: "); Serial.print(month, DEC); Serial.print("/"); 
-  // Serial.print(day, DEC); Serial.print("/"); Serial.print(year);
-  // Serial.print("  Time: "); Serial.print(hour, DEC); Serial.print(":"); 
-  // Serial.print(minute, DEC); Serial.print(":"); Serial.print(second, DEC); 
-  // Serial.print("."); Serial.println(hundredths, DEC);
+  if(new_latitude != latitude || new_longitude != longitude){
+    latitude = new_latitude;
+    longitude = new_longitude;
+    File log = getGpsLogFile();
 
-  // Serial.print("Altitude/Heading: "); Serial.print(altitude);  Serial.print("m, ");
-  // Serial.print(course); Serial.println(" ");
-  // Serial.print("Speed(kmph): "); Serial.print(speed_mps); Serial.println("m/s");
+    log.printf("%02u/%02u/%4u %02u:%02u:%02u; %11.8f; %11.8f\r\n", (int)day, month, year, hour, minute, second, latitude, longitude);
+    log.close();
+  }
 
-  // Serial.println();
-  
   // // Here you can print statistics on the sentences.
   // unsigned long chars;
   // unsigned short sentences, failed_checksum;

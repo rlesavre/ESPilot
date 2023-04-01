@@ -1,7 +1,6 @@
 #ifndef SCREEN_PAGE
 #define SCREEN_PAGE
 
-
 #include "BaseDisplay.h"
 
 class IScreenPage {

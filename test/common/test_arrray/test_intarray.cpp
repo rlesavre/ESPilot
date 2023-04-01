@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT // REQUIRED: Enable custom main()
 #include <doctest.h>
-#include <SimpleArray.hpp>
+#include <BasicArray.hpp>
 
 // TEST_CASE ...
 TEST_CASE("array can be sized and resized")

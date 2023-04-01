@@ -1,4 +1,5 @@
 #include "Screen.h"
+#include "Logger.h"
 
 ScreenModule::ScreenModule(Subject<int> *buttonPressed, TwoWire *twi)
 {
@@ -10,9 +11,9 @@ void ScreenModule::setup()
 {
   if (!display->begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
   {
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;)
-      ;
+    logf("Fatal error: SSD1306 allocation failed");
+    delay(500);
+    esp_restart();
   }
   display->ssd1306_command(SSD1306_SETCONTRAST);
   display->ssd1306_command(SCREEN_BRIGHTNESS);

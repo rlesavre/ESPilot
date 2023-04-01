@@ -11,20 +11,23 @@
 #include <SoftwareSerial.h>
 #include <TinyGPS.h>
 
+#include "Storage.h"
+
 // https://rl.se/gprmc
 
 class GpsModule : public IScreenPage, public IBaseModule {
 public:
   const char* getName() {return "GPS";}
   IScreenPage* getDisplayPage() {return this;}
-  GpsModule(int rxPin = GPSRXPIN, int txPin = GPSTXPIN);
+  GpsModule(TOpenFile getFile, int rxPin = GPSRXPIN, int txPin = GPSTXPIN);
 	void setup();
 	void loop();
   int delayFix();
 
   void displayScreenPage(IDisplay *display, int position);
-
+  bool logGpsData = false;
 private:
+  TOpenFile getGpsLogFile;
   bool outputedDate = false;
   bool logging = false;
 	float longitude;

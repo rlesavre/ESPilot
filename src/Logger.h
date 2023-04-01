@@ -3,31 +3,23 @@
 
 #include "BaseModule.h"
 #include "Common.h"
+#include "Storage.h"
+#include "EspNowAgent.h"
+#include "functional"
 
 using std::runtime_error;
+int logf(const char *format, ...);
 
-enum LogLevel{
-  debug, info, warn, error, fatal
-};
-
-class ILogger {
-   public:
-
-    virtual void log(LogLevel level, char* message);
-    void debug(char* message) { log(LogLevel::debug, message); }
-    void info(char* message) { log(LogLevel::info, message); }
-    void warn(char* message) { log(LogLevel::warn, message); }
-    void error(char* message) { log(LogLevel::error, message); }
-    void fatal(char* message) { log(LogLevel::fatal, message); }
-};
-
-class LoggerModule : public IBaseModule, public IScreenPage, public ILogger
+class LoggerModule : public IBaseModule, public IScreenPage
 {
 private:
   static LoggerModule* _instance;
   bool halted = false;
-public:
+  TOpenFile getLogfile;
+  File logfile;
+  bool setuped = false;
 
+public:
   static LoggerModule *GetInstance(){
     if(_instance==NULL){
       _instance = new LoggerModule();
@@ -36,14 +28,13 @@ public:
   }
   const char *getName() { return "Logger"; }
   IScreenPage *getDisplayPage() { return this; }
+  void setLogfileOPener(TOpenFile getFile);
   void setup();
   void loop();
   void displayScreenPage(IDisplay *display, int position);
-  void log(LogLevel level, char* message) override;
 
-  ILogger* instance(){
-    return _instance;    
-  }
+  void log(const char text[], bool localOnly = false);
+  void log(const uint8_t *data, size_t len, bool localOnly = false);
 
   bool isHalted(){
     return halted;
